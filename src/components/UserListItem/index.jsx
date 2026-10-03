@@ -1,18 +1,22 @@
-import { Component } from 'react'
-
-class UserListItem extends Component {
-    constructor(props) {
-      super(props)
-    
-      this.state = {
-         
-      }
-    }
-  render() {
+function UserListItem({userInfo}) {
+   
+  const {
+    name: { first, last },
+    dob: { age },
+    picture: { medium },
+    } = userInfo;
+   
     return (
-      <div></div>
+      <li>
+        <img src={medium}/>
+        <div>
+            <span>{first}</span>
+            <span>{last}</span>
+        </div>
+        <span>{age}</span>
+      </li>
     )
-  }
 }
+
 
 export default UserListItem

@@ -31,6 +31,7 @@ import UserListItem from '../UserListItem'
     if (prevState.currentPage!==currentPage){
       this.loadUsers();
     }
+    console.log('this.state.users :>> ', this.state.users);
    }
    
   prevPage = () => {
@@ -53,7 +54,7 @@ import UserListItem from '../UserListItem'
     {isFetching && <div>Loading...</div>}     
     {!error && !isFetching &&    
     <>
-        <ul>{users.map(u => <UserListItem userInfo={u}/>)}</ul>
+        <ul>{users.map(u => <UserListItem key={u.email} userInfo={u}/>)}</ul>
         <button onClick={this.prevPage}>{'<'}</button>
         <button onClick={this.nextPage}>{'>'}</button>
     </>
