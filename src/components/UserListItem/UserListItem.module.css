@@ -39,4 +39,8 @@
   background-color: rgb(199, 48, 48);
   cursor: pointer;
 }
-   
+
+.selectListItem {
+  background-color: rgb(157, 102, 206);
+  color:white;
+}

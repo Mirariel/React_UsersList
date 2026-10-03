@@ -25,10 +25,22 @@ class UserList extends Component {
     const { currentPage } = this.state;
     this.setState({ isFetching: true });
     getUsers({ page: currentPage, results: 5 })
-      .then((data) => this.setState({ users: data.results }))
+      .then((data) => {
+        const users = data.results.map((u) => ({ ...u, isSelected: false }));
+        this.setState({ users });
+      })
       .catch((e) => this.setState({ error: e }))
       .finally(() => this.setState({ isFetching: false }));
   };
+
+  selectList = (email) => {
+    this.setState(({ users }) => ({
+      users: users.map((u) =>
+        u.email === email ? { ...u, isSelected: !u.isSelected } : u,
+      ),
+    }));
+  };
+
   componentDidMount() {
     this.loadUsers();
   }
@@ -68,6 +80,7 @@ class UserList extends Component {
                   key={u.email}
                   userInfo={u}
                   deleteUser={this.removeUser}
+                  selectList={this.selectList}
                 />
               ))}
             </ul>
