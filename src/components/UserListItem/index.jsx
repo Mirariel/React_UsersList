@@ -1,10 +1,11 @@
 import styles from "./UserListItem.module.css";
 
-function UserListItem({ userInfo }) {
+function UserListItem({ userInfo, deleteUser }) {
   const {
     name: { first, last },
     dob: { age },
     picture: { medium },
+    email,
   } = userInfo;
 
   return (
@@ -15,6 +16,9 @@ function UserListItem({ userInfo }) {
         <span className={styles.userName}>{last}</span>
       </div>
       <span className={styles.userAge}>Age: {age}</span>
+      <button className={styles.deleteBtn} onClick={() => deleteUser(email)}>
+        x
+      </button>
     </li>
   );
 }

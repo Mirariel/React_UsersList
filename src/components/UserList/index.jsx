@@ -15,6 +15,12 @@ class UserList extends Component {
     };
   }
 
+  removeUser = (email) => {
+    this.setState(({ users }) => ({
+      users: users.filter((u) => u.email !== email),
+    }));
+  };
+
   loadUsers = () => {
     const { currentPage } = this.state;
     this.setState({ isFetching: true });
@@ -58,7 +64,11 @@ class UserList extends Component {
           <>
             <ul className={styles.userList}>
               {users.map((u) => (
-                <UserListItem key={u.email} userInfo={u} />
+                <UserListItem
+                  key={u.email}
+                  userInfo={u}
+                  deleteUser={this.removeUser}
+                />
               ))}
             </ul>
             <div className={styles.btnContainer}>

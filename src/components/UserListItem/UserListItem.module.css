@@ -25,3 +25,18 @@
 .userAge {
   font-size: 1.1rem;
 }
+
+.deleteBtn {
+  align-self: flex-start;
+
+  background-color: rgb(235, 129, 129);
+  border: none;
+  color: white;
+  border-radius: 50%;
+}
+
+.deleteBtn:hover {
+  background-color: rgb(199, 48, 48);
+  cursor: pointer;
+}
+   
