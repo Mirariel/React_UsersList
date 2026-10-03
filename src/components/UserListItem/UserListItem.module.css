@@ -1,0 +1,27 @@
+.userCard {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  margin: 15px;
+  border: 1px solid green;
+  padding: 10px;
+  align-items: center;
+}
+
+.userImg {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nameContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  font-size: 1.5rem;
+}
+
+.userAge {
+  font-size: 1.1rem;
+}
