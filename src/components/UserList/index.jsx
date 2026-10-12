@@ -3,6 +3,8 @@ import getUsers from "../../api";
 import UserListItem from "../UserListItem";
 import styles from "./UserList.module.css";
 
+const PAGE_SIZE = 5;
+
 class UserList extends Component {
   constructor(props) {
     super(props);
@@ -12,25 +14,48 @@ class UserList extends Component {
       isFetching: false,
       error: null,
       currentPage: 1,
+      genderFilter: "",
     };
   }
 
-  removeUser = (email) => {
-    this.setState(({ users }) => ({
-      users: users.filter((u) => u.email !== email),
-    }));
-  };
+  componentDidMount() {
+    this.loadUsers();
+  }
 
   loadUsers = () => {
-    const { currentPage } = this.state;
-    this.setState({ isFetching: true });
-    getUsers({ page: currentPage, results: 5 })
+    this.setState({ isFetching: true, error: null });
+    getUsers({ results: 100 })
       .then((data) => {
         const users = data.results.map((u) => ({ ...u, isSelected: false }));
         this.setState({ users });
       })
       .catch((e) => this.setState({ error: e }))
       .finally(() => this.setState({ isFetching: false }));
+  };
+
+  handleGenderChange = (e) => {
+    this.setState({ genderFilter: e.target.value, currentPage: 1 });
+  };
+
+  getFilteredUsers = () => {
+    const { users, genderFilter } = this.state;
+    return genderFilter
+      ? users.filter((u) => u.gender === genderFilter)
+      : users;
+  };
+
+  removeUser = (email) => {
+    this.setState(({ users, currentPage, genderFilter }) => {
+      const newUsers = users.filter((u) => u.email !== email);
+      const filtered = genderFilter
+        ? newUsers.filter((u) => u.gender === genderFilter)
+        : newUsers;
+      const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+      return {
+        users: newUsers,
+        currentPage: Math.min(currentPage, totalPages),
+      };
+    });
   };
 
   selectList = (email) => {
@@ -41,18 +66,6 @@ class UserList extends Component {
     }));
   };
 
-  componentDidMount() {
-    this.loadUsers();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { currentPage } = this.state;
-    if (prevState.currentPage !== currentPage) {
-      this.loadUsers();
-    }
-    console.log("this.state.users :>> ", this.state.users);
-  }
-
   prevPage = () => {
     const { currentPage } = this.state;
     if (currentPage > 1) this.setState({ currentPage: currentPage - 1 });
@@ -60,22 +73,36 @@ class UserList extends Component {
 
   nextPage = () => {
     const { currentPage } = this.state;
-    this.setState({ currentPage: currentPage + 1 });
+    const totalPages = Math.ceil(this.getFilteredUsers().length / PAGE_SIZE);
+    if (currentPage < totalPages) {
+      this.setState({ currentPage: currentPage + 1 });
+    }
   };
 
   render() {
-    const { users, isFetching, error } = this.state;
+    const { isFetching, error, currentPage, genderFilter } = this.state;
+    const filtered = this.getFilteredUsers();
+    const pageUsers = filtered.slice(
+      (currentPage - 1) * PAGE_SIZE,
+      currentPage * PAGE_SIZE,
+    );
+
     return (
       <div className={styles.listContainer}>
         <header className={styles.listHeader}>
           <h1>Users List</h1>
+          <select value={genderFilter} onChange={this.handleGenderChange}>
+            <option value="">Всі</option>
+            <option value="male">Чоловіки</option>
+            <option value="female">Жінки</option>
+          </select>
         </header>
         {error && <div className={styles.errorContainer}>!!!Error!!!</div>}
         {isFetching && <div className={styles.loadContainer}>Loading...</div>}
         {!error && !isFetching && (
           <>
             <ul className={styles.userList}>
-              {users.map((u) => (
+              {pageUsers.map((u) => (
                 <UserListItem
                   key={u.email}
                   userInfo={u}

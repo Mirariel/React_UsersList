@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import styles from "./UserListItem.module.css";
 
 function UserListItem({ userInfo, deleteUser, selectList }) {
@@ -9,18 +10,26 @@ function UserListItem({ userInfo, deleteUser, selectList }) {
     isSelected,
   } = userInfo;
 
+  const selectedUser = classNames({
+    [styles.userCard]: true,
+    [styles.selectListItem]: isSelected,
+  });
+
   return (
-    <li
-      className={`${styles.userCard} ${isSelected ? styles.selectListItem : ""}`}
-      onClick={() => selectList(email)}
-    >
-      <img className={styles.userImg} src={medium} />
+    <li className={selectedUser} onClick={() => selectList(email)}>
+      <img className={styles.userImg} src={medium} alt={`${first} ${last}`} />
       <div className={styles.nameContainer}>
         <span className={styles.userName}>{first}</span>
         <span className={styles.userName}>{last}</span>
       </div>
       <span className={styles.userAge}>Age: {age}</span>
-      <button className={styles.deleteBtn} onClick={() => deleteUser(email)}>
+      <button
+        className={styles.deleteBtn}
+        onClick={(e) => {
+          e.stopPropagation();
+          deleteUser(email);
+        }}
+      >
         x
       </button>
     </li>
