@@ -3,8 +3,6 @@ import getUsers from "../../api";
 import UserListItem from "../UserListItem";
 import styles from "./UserList.module.css";
 
-const PAGE_SIZE = 5;
-
 class UserList extends Component {
   constructor(props) {
     super(props);
@@ -15,6 +13,7 @@ class UserList extends Component {
       error: null,
       currentPage: 1,
       genderFilter: "",
+      pageSize: 5,
     };
   }
 
@@ -33,8 +32,8 @@ class UserList extends Component {
       .finally(() => this.setState({ isFetching: false }));
   };
 
-  handleGenderChange = (e) => {
-    this.setState({ genderFilter: e.target.value, currentPage: 1 });
+  handleChange = ({ target: { name, value } }) => {
+    this.setState({ [name]: value, currentPage: 1 });
   };
 
   getFilteredUsers = () => {
@@ -45,12 +44,12 @@ class UserList extends Component {
   };
 
   removeUser = (email) => {
-    this.setState(({ users, currentPage, genderFilter }) => {
+    this.setState(({ users, currentPage, genderFilter, pageSize }) => {
       const newUsers = users.filter((u) => u.email !== email);
       const filtered = genderFilter
         ? newUsers.filter((u) => u.gender === genderFilter)
         : newUsers;
-      const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+      const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
       return {
         users: newUsers,
         currentPage: Math.min(currentPage, totalPages),
@@ -72,30 +71,43 @@ class UserList extends Component {
   };
 
   nextPage = () => {
-    const { currentPage } = this.state;
-    const totalPages = Math.ceil(this.getFilteredUsers().length / PAGE_SIZE);
+    const { currentPage, pageSize } = this.state;
+    const totalPages = Math.ceil(this.getFilteredUsers().length / pageSize);
     if (currentPage < totalPages) {
       this.setState({ currentPage: currentPage + 1 });
     }
   };
 
   render() {
-    const { isFetching, error, currentPage, genderFilter } = this.state;
+    const { isFetching, error, currentPage, genderFilter, pageSize } =
+      this.state;
     const filtered = this.getFilteredUsers();
     const pageUsers = filtered.slice(
-      (currentPage - 1) * PAGE_SIZE,
-      currentPage * PAGE_SIZE,
+      (currentPage - 1) * pageSize,
+      currentPage * pageSize,
     );
 
     return (
       <div className={styles.listContainer}>
         <header className={styles.listHeader}>
           <h1>Users List</h1>
-          <select value={genderFilter} onChange={this.handleGenderChange}>
-            <option value="">Всі</option>
-            <option value="male">Чоловіки</option>
-            <option value="female">Жінки</option>
-          </select>
+
+          <div>
+            {" "}
+            <select name="genderFilter" value={genderFilter} onChange={this.handleChange}>
+              <option value="">Всі</option>
+              <option value="male">Чоловіки</option>
+              <option value="female">Жінки</option>
+            </select>
+            <input
+              type="number"
+              value={pageSize}
+              name="pageSize"
+              min="1"
+              max="15"
+              onChange={this.handleChange}
+            />
+          </div>
         </header>
         {error && <div className={styles.errorContainer}>!!!Error!!!</div>}
         {isFetching && <div className={styles.loadContainer}>Loading...</div>}

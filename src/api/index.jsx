@@ -1,7 +1,7 @@
 function getUsers(options) {
   const defaultOptions = {
     page: 1,
-    results: 5,
+    results: 30,
     seed: "od2026",
     inc: ["email", "name", "dob", "picture", "gender"],
   };
