@@ -8,11 +8,15 @@ function UserListItem({ userInfo, deleteUser, selectList }) {
     picture: { medium },
     email,
     isSelected,
+    gender,
   } = userInfo;
 
   const selectedUser = classNames({
     [styles.userCard]: true,
-    [styles.selectListItem]: isSelected,
+    [styles.selectListMaleItem]: isSelected && gender === "male",
+    [styles.selectListFemaleItem]: isSelected && gender === "female",
+    [styles.maleUser]: gender === "male",
+    [styles.femaleUser]: gender === "female",
   });
 
   return (
